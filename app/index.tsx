@@ -1,3 +1,4 @@
+import { Audio } from 'expo-av';
 import SystemSetting from 'react-native-system-setting';
 import { StyleSheet, Text, View } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
@@ -7,6 +8,12 @@ export default function Index() {
   const lastValue = useRef(0.5);
 
   useEffect(() => {
+    Audio.setAudioModeAsync({
+      allowsRecordingIOS: false, // we only need playback
+      playsInSilentModeIOS: true, // session category = .playback
+      staysActiveInBackground: false // only foreground
+    });
+
     const listener = SystemSetting.addVolumeListener(({ value }) => {
       console.log('Volume changed:', value);
       setCount(c => c + (value > lastValue.current ? 1 : value < lastValue.current ? -1 : 0));
