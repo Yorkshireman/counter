@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 
 export default function Index() {
   const [count, setCount] = useState(0);
-  const lastValue = useRef<number>(0.5);
+  // const lastValue = useRef<number>(0.5);
 
   useEffect(() => {
     let sub: { remove: () => void } | null = null;
@@ -18,11 +18,13 @@ export default function Index() {
         playsInSilentModeIOS: true,
         staysActiveInBackground: false
       });
+
       const { sound } = await Audio.Sound.createAsync(require('../assets/silent.mp3'), {
         isLooping: true,
         shouldPlay: true,
         volume: 0
       });
+
       soundObj = sound;
 
       // 2. Mute the HUD
@@ -33,9 +35,10 @@ export default function Index() {
 
       // 4. Listen for hardware button presses
       sub = VolumeManager.addVolumeListener(({ volume }) => {
-        console.log('🎚 Volume changed:', volume);
-        setCount(c => c + (volume > lastValue.current ? 1 : -1));
-        lastValue.current = volume;
+        if (Math.abs(volume - 0.5) < 0.01) return;
+        // setCount(c => c + (volume > lastValue.current ? 1 : -1));
+        // lastValue.current = volume;
+        setCount(c => c + 1);
         VolumeManager.setVolume(0.5);
       });
     })();
