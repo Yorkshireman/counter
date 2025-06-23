@@ -1,28 +1,49 @@
 import { Audio } from 'expo-av';
-import SystemSetting from 'react-native-system-setting';
+import { VolumeManager } from 'react-native-volume-manager';
 import { StyleSheet, Text, View } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 
 export default function Index() {
   const [count, setCount] = useState(0);
-  const lastValue = useRef(0.5);
+  const lastValue = useRef<number>(0.5);
 
   useEffect(() => {
-    Audio.setAudioModeAsync({
-      allowsRecordingIOS: false, // we only need playback
-      playsInSilentModeIOS: true, // session category = .playback
-      staysActiveInBackground: false // only foreground
-    });
+    let sub: { remove: () => void } | null = null;
+    let soundObj: Audio.Sound | null = null;
 
-    const listener = SystemSetting.addVolumeListener(({ value }) => {
-      console.log('Volume changed:', value);
-      setCount(c => c + (value > lastValue.current ? 1 : value < lastValue.current ? -1 : 0));
-      lastValue.current = value;
-      SystemSetting.setVolume(0.5);
-    });
+    (async () => {
+      // 1. Activate audio session & play silent loop
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+        staysActiveInBackground: false
+      });
+      const { sound } = await Audio.Sound.createAsync(require('../assets/silent.mp3'), {
+        isLooping: true,
+        shouldPlay: true,
+        volume: 0
+      });
+      soundObj = sound;
 
-    SystemSetting.setVolume(0.5);
-    return () => SystemSetting.removeVolumeListener(listener);
+      // 2. Mute the HUD
+      VolumeManager.showNativeVolumeUI({ enabled: false });
+
+      // 3. Prime volume
+      await VolumeManager.setVolume(0.5);
+
+      // 4. Listen for hardware button presses
+      sub = VolumeManager.addVolumeListener(({ volume }) => {
+        console.log('🎚 Volume changed:', volume);
+        setCount(c => c + (volume > lastValue.current ? 1 : -1));
+        lastValue.current = volume;
+        VolumeManager.setVolume(0.5);
+      });
+    })();
+
+    return () => {
+      sub?.remove();
+      soundObj?.unloadAsync();
+    };
   }, []);
 
   return (
