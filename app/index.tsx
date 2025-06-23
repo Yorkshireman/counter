@@ -1,18 +1,16 @@
 import { Audio } from 'expo-av';
 import { VolumeManager } from 'react-native-volume-manager';
 import { StyleSheet, Text, View } from 'react-native';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Index() {
   const [count, setCount] = useState(0);
-  // const lastValue = useRef<number>(0.5);
 
   useEffect(() => {
     let sub: { remove: () => void } | null = null;
     let soundObj: Audio.Sound | null = null;
 
     (async () => {
-      // 1. Activate audio session & play silent loop
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         playsInSilentModeIOS: true,
@@ -27,18 +25,21 @@ export default function Index() {
 
       soundObj = sound;
 
-      // 2. Mute the HUD
       VolumeManager.showNativeVolumeUI({ enabled: false });
 
-      // 3. Prime volume
+      // Set volume so it's not at 0 (so can be changed up or down)
       await VolumeManager.setVolume(0.5);
 
-      // 4. Listen for hardware button presses
+      // Listen for hardware button presses
       sub = VolumeManager.addVolumeListener(({ volume }) => {
         if (Math.abs(volume - 0.5) < 0.01) return;
-        // setCount(c => c + (volume > lastValue.current ? 1 : -1));
-        // lastValue.current = volume;
-        setCount(c => c + 1);
+
+        if (volume > 0.5) {
+          setCount(c => c + 1);
+        } else {
+          setCount(c => c - 1);
+        }
+
         VolumeManager.setVolume(0.5);
       });
     })();
