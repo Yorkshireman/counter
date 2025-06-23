@@ -7,7 +7,8 @@
     "lint": "expo lint",
     "prebuild": "expo prebuild -p ios",
     "start": "expo start",
-    "start-dev-client": "expo start --dev-client"
+    "start-dev-client": "expo start --dev-client",
+    "android": "expo run:android"
   },
   "dependencies": {
     "expo": "~53.0.12",
@@ -17,7 +18,8 @@
     "react": "19.0.0",
     "react-native": "0.79.4",
     "react-native-system-setting": "^1.7.6",
-    "react-native-safe-area-context": "5.4.0"
+    "react-native-safe-area-context": "5.4.0",
+    "react-native-screens": "~4.11.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

@@ -8,6 +8,7 @@ export default function Index() {
 
   useEffect(() => {
     const listener = SystemSetting.addVolumeListener(({ value }) => {
+      console.log('Volume changed:', value);
       setCount(c => c + (value > lastValue.current ? 1 : value < lastValue.current ? -1 : 0));
       lastValue.current = value;
       SystemSetting.setVolume(0.5);
