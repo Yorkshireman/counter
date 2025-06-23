@@ -4,7 +4,6 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
 
 export default function Index() {
-  const [oldVolume, setOldVolume] = useState(0.5);
   const [count, setCount] = useState(0);
 
   useEffect(() => {
@@ -33,16 +32,8 @@ export default function Index() {
 
       // Listen for hardware button presses
       sub = VolumeManager.addVolumeListener(({ volume }) => {
-        console.log('sub running', volume);
-        if (Math.abs(volume - 0.5) < 0.01) return;
-
-        if (volume > oldVolume) {
-          setCount(c => c + 1);
-        } else {
-          setCount(c => (c ? c - 1 : 0));
-        }
-
-        setOldVolume(volume);
+        if (Math.abs(volume - 0.5) < 0.001) return;
+        setCount(c => c + 1);
         VolumeManager.setVolume(0.5);
       });
     })();
