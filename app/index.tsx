@@ -37,7 +37,7 @@ export default function Index() {
         if (volume > 0.5) {
           setCount(c => c + 1);
         } else {
-          setCount(c => c - 1);
+          setCount(c => (c ? c - 1 : 0));
         }
 
         VolumeManager.setVolume(0.5);
