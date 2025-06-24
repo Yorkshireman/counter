@@ -34,13 +34,19 @@ export default function Index() {
       // Set volume so it's not at 0 (so can be changed up or down)
       await VolumeManager.setVolume(0.5);
 
-      sub = VolumeManager.addVolumeListener(() => {
+      sub = VolumeManager.addVolumeListener(({ volume }) => {
         if (programmaticVolumeChangeRef.current) {
           programmaticVolumeChangeRef.current = false;
           return;
         }
-
-        setCount(c => c + 1);
+        console.log({ volume });
+        if (volume > 0.5) {
+          console.log('Incrementing count');
+          setCount(c => c + 1);
+        } else if (volume < 0.5) {
+          console.log('Decrementing count');
+          setCount(c => c - 1);
+        }
       });
     })();
 
