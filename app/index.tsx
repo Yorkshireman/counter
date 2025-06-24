@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import { Audio } from 'expo-av';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { VolumeManager } from 'react-native-volume-manager';
@@ -5,9 +6,9 @@ import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 
 export default function Index() {
-  const programmaticVolumeChangeRef = useRef(false);
   const [count, setCount] = useState(0);
   const didMount = useRef(false);
+  const programmaticVolumeChangeRef = useRef(false);
 
   useEffect(() => {
     let sub: { remove: () => void } | null = null;
@@ -55,6 +56,8 @@ export default function Index() {
       return;
     }
 
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+
     const resetVolume = async () => {
       if (count === 0) return;
       programmaticVolumeChangeRef.current = true;
@@ -77,6 +80,7 @@ export default function Index() {
         {
           onPress: async () => {
             setCount(0);
+            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
           },
           text: 'OK'
         }
