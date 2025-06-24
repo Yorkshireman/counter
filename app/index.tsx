@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 
 export default function Index() {
   const [count, setCount] = useState(0);
+  const countRef = useRef(count);
   const didMount = useRef(false);
   const programmaticVolumeChangeRef = useRef(false);
 
@@ -34,8 +35,11 @@ export default function Index() {
       // Set volume so it's not at 0 (so can be changed up or down)
       await VolumeManager.setVolume(0.5);
 
-      sub = VolumeManager.addVolumeListener(({ volume }) => {
+      sub = VolumeManager.addVolumeListener(async ({ volume }) => {
+        console.log('sub running, time: ', new Date().toISOString());
+        console.log({ programmaticVolumeChangeRef: programmaticVolumeChangeRef.current });
         if (programmaticVolumeChangeRef.current) {
+          console.log('Programmatic volume change detected, ignoring');
           programmaticVolumeChangeRef.current = false;
           return;
         }
@@ -44,6 +48,13 @@ export default function Index() {
           console.log('Incrementing count');
           setCount(c => c + 1);
         } else if (volume < 0.5) {
+          if (countRef.current === 0) {
+            console.log('Count is already 0, not decrementing');
+            programmaticVolumeChangeRef.current = true;
+            await VolumeManager.setVolume(0.5);
+            return;
+          }
+
           console.log('Decrementing count');
           setCount(c => c - 1);
         }
@@ -57,6 +68,7 @@ export default function Index() {
   }, []);
 
   useEffect(() => {
+    countRef.current = count;
     if (!didMount.current) {
       didMount.current = true;
       return;
@@ -65,7 +77,9 @@ export default function Index() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
 
     const resetVolume = async () => {
-      if (count === 0) return;
+      console.log('resetVolume called, count: ', count);
+      console.log('programmaticVolumeChangeRef: ', programmaticVolumeChangeRef.current);
+      // if (count === 0) return;
       programmaticVolumeChangeRef.current = true;
       await VolumeManager.setVolume(0.5);
     };
