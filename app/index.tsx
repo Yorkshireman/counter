@@ -1,6 +1,7 @@
 import { Audio } from 'expo-av';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { VolumeManager } from 'react-native-volume-manager';
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 
 export default function Index() {
@@ -56,6 +57,7 @@ export default function Index() {
     }
 
     const resetVolume = async () => {
+      if (count === 0) return;
       programmaticVolumeChangeRef.current = true;
       await VolumeManager.setVolume(0.5);
     };
@@ -63,9 +65,33 @@ export default function Index() {
     resetVolume();
   }, [count]);
 
+  const onPressReset = () => {
+    if (count === 0) return;
+    Alert.alert(
+      'Reset',
+      'Are you sure you want to reset the counter to zero? This cannot be undone.',
+      [
+        {
+          style: 'cancel',
+          text: 'Cancel'
+        },
+        {
+          onPress: async () => {
+            setCount(0);
+          },
+          text: 'OK'
+        }
+      ],
+      { cancelable: true }
+    );
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.count}>{count}</Text>
+      <TouchableOpacity onPress={onPressReset} style={{ padding: 5 }}>
+        <Ionicons color={'#fff'} name='refresh-outline' size={72} />
+      </TouchableOpacity>
     </View>
   );
 }
