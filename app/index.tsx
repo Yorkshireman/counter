@@ -36,26 +36,20 @@ export default function Index() {
       await VolumeManager.setVolume(0.5);
 
       sub = VolumeManager.addVolumeListener(async ({ volume }) => {
-        console.log('sub running, time: ', new Date().toISOString());
-        console.log({ programmaticVolumeChangeRef: programmaticVolumeChangeRef.current });
         if (programmaticVolumeChangeRef.current) {
-          console.log('Programmatic volume change detected, ignoring');
           programmaticVolumeChangeRef.current = false;
           return;
         }
-        console.log({ volume });
+
         if (volume > 0.5) {
-          console.log('Incrementing count');
           setCount(c => c + 1);
         } else if (volume < 0.5) {
           if (countRef.current === 0) {
-            console.log('Count is already 0, not decrementing');
             programmaticVolumeChangeRef.current = true;
             await VolumeManager.setVolume(0.5);
             return;
           }
 
-          console.log('Decrementing count');
           setCount(c => c - 1);
         }
       });
@@ -77,9 +71,6 @@ export default function Index() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
 
     const resetVolume = async () => {
-      console.log('resetVolume called, count: ', count);
-      console.log('programmaticVolumeChangeRef: ', programmaticVolumeChangeRef.current);
-      // if (count === 0) return;
       programmaticVolumeChangeRef.current = true;
       await VolumeManager.setVolume(0.5);
     };
