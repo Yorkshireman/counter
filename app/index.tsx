@@ -91,7 +91,9 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.count}>{count}</Text>
+      <Text adjustsFontSizeToFit={true} numberOfLines={1} style={styles.count}>
+        {count}
+      </Text>
       <TouchableOpacity onPress={onPressReset} style={{ padding: 5 }}>
         <Ionicons color={'#fff'} name='refresh-outline' size={72} />
       </TouchableOpacity>
