@@ -1,10 +1,12 @@
 import { Audio } from 'expo-av';
 import { VolumeManager } from 'react-native-volume-manager';
 import { StyleSheet, Text, View } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function Index() {
+  const programmaticVolumeChangeRef = useRef(false);
   const [count, setCount] = useState(0);
+  const didMount = useRef(false);
 
   useEffect(() => {
     let sub: { remove: () => void } | null = null;
@@ -30,11 +32,14 @@ export default function Index() {
       // Set volume so it's not at 0 (so can be changed up or down)
       await VolumeManager.setVolume(0.5);
 
-      // Listen for hardware button presses
       sub = VolumeManager.addVolumeListener(({ volume }) => {
-        if (Math.abs(volume - 0.5) < 0.001) return;
+        console.log({ programmaticVolumeChangeRef: programmaticVolumeChangeRef.current });
+        if (programmaticVolumeChangeRef.current) {
+          programmaticVolumeChangeRef.current = false;
+          return;
+        }
+
         setCount(c => c + 1);
-        VolumeManager.setVolume(0.5);
       });
     })();
 
@@ -43,6 +48,20 @@ export default function Index() {
       soundObj?.unloadAsync();
     };
   }, []);
+
+  useEffect(() => {
+    if (!didMount.current) {
+      didMount.current = true;
+      return;
+    }
+
+    const resetVolume = async () => {
+      programmaticVolumeChangeRef.current = true;
+      await VolumeManager.setVolume(0.5);
+    };
+
+    resetVolume();
+  }, [count]);
 
   return (
     <View style={styles.container}>
