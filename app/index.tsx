@@ -33,8 +33,7 @@ export default function Index() {
       // Set volume so it's not at 0 (so can be changed up or down)
       await VolumeManager.setVolume(0.5);
 
-      sub = VolumeManager.addVolumeListener(({ volume }) => {
-        console.log({ programmaticVolumeChangeRef: programmaticVolumeChangeRef.current });
+      sub = VolumeManager.addVolumeListener(() => {
         if (programmaticVolumeChangeRef.current) {
           programmaticVolumeChangeRef.current = false;
           return;
