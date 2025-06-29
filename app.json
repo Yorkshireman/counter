@@ -17,7 +17,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.codedegen.counter"
     },
-    "plugins": ["expo-dev-client", "expo-router", "./plugins/expo-plugin-system-setting.js"],
+    "plugins": ["expo-dev-client"],
     "extra": {
       "router": {},
       "eas": {
