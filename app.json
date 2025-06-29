@@ -1,7 +1,9 @@
 {
   "expo": {
     "name": "counter",
-    "assetBundlePatterns": ["assets/*"],
+    "assetBundlePatterns": [
+      "assets/*"
+    ],
     "slug": "counter",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,9 +17,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.codedegen.counter"
+      "bundleIdentifier": "com.codedegen.counter",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
-    "plugins": ["expo-dev-client"],
+    "plugins": [
+      "expo-dev-client"
+    ],
     "extra": {
       "router": {},
       "eas": {
